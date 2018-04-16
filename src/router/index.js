@@ -1,15 +1,43 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import Vue from 'vue';
+import Router from 'vue-router';
+import Login from '../components/Login';
+import Archive from '../components/Archive';
+import Task from '../components/Task';
+import Tasks from '../components/Tasks';
+import SignUp from '../components/SignUp';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      redirect: '/login'
+    },
+    {
+      path: '/tasks',
+      name: 'tasks',
+      component: Tasks
+    },
+    {
+      path: '/Login',
+      name: 'login',
+      component: Login
+    },
+    {
+      path: '/task/:taskId',
+      name: 'task',
+      component: Task
+    },
+    {
+      path: '/archive',
+      name: 'archive',
+      component: Archive
+    },
+    {
+      path: '/sign-up',
+      name: 'signUp',
+      component: SignUp
     }
   ]
-})
+});
