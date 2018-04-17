@@ -1,6 +1,6 @@
 <template>
-  <form class="login" v-on:submit="signIn">
-    <h3>Sign In</h3>
+  <form class="login" v-on:submit="login">
+    <h3>Log In</h3>
     <input type="email" v-model="email" placeholder="email" required><br>
     <input type="password" v-model="password" placeholder="password" required><br>
     <button>Connection</button>
@@ -13,33 +13,23 @@ import firebase from 'firebase';
 
 export default {
   name: 'login',
-  data: () => {
+  data: function () {
     return {
       email: '',
       password: ''
     };
   },
   methods: {
-    signIn: function () {
+    login: function () {
+      const self = this;
       firebase.auth().signInWithEmailAndPassword(this.email, this.password)
         .then(
           function () {
-            return firebase.auth().currentUser.updateProfile({
-              displayName: this.name,
-              photoURL: ''
-            });
+            self.$router.replace('tasks');
           },
           function (err) {
-            alert('Ooops! ' + err.message);
-          })
-        .then(
-          function () {
-            alert('Well done! You are now connected');
-          },
-          function (err) {
-            alert('Ooops! ' + err.message);
+            alert('! ' + err.message);
           });
-      this.$router.replace('tasks');
     }
   }
 };

@@ -21,12 +21,24 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    isLogin: false,
     userName: '',
     tasks: []
   },
   mutations: {
     setName (state, payload) {
       state.userName = payload;
+    },
+    clear (state) {
+      state.isLogin = false;
+      state.userName = '';
+      state.tasks = [];
+    },
+    login (state) {
+      state.isLogin = true;
+    },
+    logout (state) {
+      state.isLogin = false;
     }
   }
 });

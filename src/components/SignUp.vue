@@ -33,6 +33,7 @@ export default {
   },
   methods: {
     signUp: function () {
+      const self = this;
       if (!this.checkPassword()) {
         this.passwordsNotMatch = true;
         return;
@@ -41,7 +42,7 @@ export default {
         .then(
           function () {
             return firebase.auth().currentUser.updateProfile({
-              displayName: this.name,
+              displayName: self.name,
               photoURL: ''
             });
           },
@@ -50,8 +51,6 @@ export default {
           })
         .then(
           function () {
-            const user = firebase.auth().currentUser;
-
           },
           function (err) {
             alert('Ooops! ' + err.message);
