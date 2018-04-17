@@ -1,19 +1,17 @@
 <template>
-  <div class="signUp">
+  <form class="signUp" v-on:submit="signUp">
     <p>Let's create a new account</p>
-    <h3>Sign In</h3>
-    <p v-if="wrongEmail" class="signUp__wrong-message signUp__wrong-message_email">
-      Please enter correct email
-    </p>
-    <input type="text" v-on:change="emailOnChange" v-model="email" placeholder="email"><br>
-    <input type="password" v-on:change="passwordOnChange" v-model="password" placeholder="password"><br>
+    <h3>Sign Up</h3>
+    <input type="text" v-model="name" placeholder="name" pattern=".{3,}" required>
+    <input type="email" v-model="email" placeholder="email" required><br>
+    <input type="password" v-on:change="passwordOnchange" v-model="password" placeholder="password" required><br>
     <p v-if="passwordsNotMatch" class="signUp__wrong-message signUp__wrong-message_password">
       Passwords do not match
     </p>
-    <input type="password" v-on:change="passwordOnChange" v-model="repeatPassword" placeholder="repeat password"><br>
-    <button v-on:click="signUp">Sign Up</button>
+    <input type="password" v-model="repeatPassword" v-on:change="passwordOnchange" placeholder="repeat password" required><br>
+    <button>Sign Up</button>
     <span>Or go back to <router-link to="/login">login</router-link></span>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -25,6 +23,7 @@ export default {
     return {
       /* eslint-disable no-useless-escape */
       emailRegExp: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      name: '',
       email: '',
       password: '',
       repeatPassword: '',
@@ -34,36 +33,39 @@ export default {
   },
   methods: {
     signUp: function () {
-      if (!this.checkEmail()) {
-        this.wrongEmail = true;
-        return;
-      }
       if (!this.checkPassword()) {
         this.passwordsNotMatch = true;
         return;
       }
       firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.email, this.password)
         .then(
+          function () {
+            return firebase.auth().currentUser.updateProfile({
+              displayName: this.name,
+              photoURL: ''
+            });
+          },
+          function (err) {
+            alert('Ooops! ' + err.message);
+          })
+        .then(
+          function () {
+            const user = firebase.auth().currentUser;
+
+          },
+          function (err) {
+            alert('Ooops! ' + err.message);
+          })
+        .then(
           () => alert('Your account has been created !'),
           (err) => alert(`Ooops. ${err.message}`));
-    },
-
-    checkEmail: function () {
-      console.log(this.email);
-      console.log(this.emailRegExp.test(String(this.email).toLowerCase()));
-      return this.emailRegExp.test(String(this.email).toLowerCase());
     },
 
     checkPassword: function () {
       return this.password === this.repeatPassword && this.password;
     },
 
-    emailOnChange: function () {
-      console.log('emailOnChange');
-      this.wrongEmail = false;
-    },
-
-    passwordOnChange: function () {
+    passwordOnchange: function () {
       this.passwordsNotMatch = false;
     }
   }
