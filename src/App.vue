@@ -6,7 +6,7 @@
       <router-link v-if="!isLogin" to="/login">LogIn</router-link>
     </header>
     <main class="content">
-      <router-view/>
+      <router-view></router-view>
     </main>
   </div>
 </template>
@@ -51,12 +51,24 @@ export default {
   created: function () {
     const store = this.$store;
     console.log('created');
+    const nextIdRef = firebase.database().ref('nextId');
+    nextIdRef.on('value', function (snapshot) {
+      store.commit('setNextId', snapshot.val());
+    });
     firebase.auth().onAuthStateChanged(
       function (user) {
         if (user) {
           console.log('auth true');
-          store.commit('setName', user.displayName);
+          store.commit('setUser', { userName: user.displayName, userId: user.uid });
           store.commit('login');
+
+          const tasksRef = firebase.database().ref('users/' + user.uid + '/tasks');
+          tasksRef.on('value', function (snapshot) {
+            console.log('task changed', snapshot.val());
+            if (snapshot.val()) {
+              store.commit('setTasks', Object.assign({}, snapshot.val()));
+            }
+          });
         } else {
           console.log('auth false');
           store.commit('clear');

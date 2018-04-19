@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import App from './App';
+import Task from './components/Task';
 import router from './router';
 import Vuex from 'vuex';
 import firebase from 'firebase';
@@ -23,22 +24,32 @@ const store = new Vuex.Store({
   state: {
     isLogin: false,
     userName: '',
-    tasks: []
+    userId: '',
+    tasks: {},
+    nextId: 0
   },
   mutations: {
-    setName (state, payload) {
-      state.userName = payload;
+    setUser (state, payload) {
+      state.userName = payload.userName;
+      state.userId = payload.userId;
     },
     clear (state) {
       state.isLogin = false;
       state.userName = '';
-      state.tasks = [];
+      state.tasks = {};
+      state.userId = '';
     },
     login (state) {
       state.isLogin = true;
     },
     logout (state) {
       state.isLogin = false;
+    },
+    setTasks (state, payload) {
+      state.tasks = payload;
+    },
+    setNextId (state, payload) {
+      state.nextId = payload;
     }
   }
 });
@@ -48,6 +59,6 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: { App },
+  components: { App, Task },
   template: '<App/>'
 });

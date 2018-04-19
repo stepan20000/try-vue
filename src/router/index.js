@@ -5,7 +5,6 @@ import Archive from '../components/Archive';
 import Task from '../components/Task';
 import Tasks from '../components/Tasks';
 import SignUp from '../components/SignUp';
-import firebase from 'firebase';
 
 Vue.use(Router);
 
@@ -13,19 +12,16 @@ let router = new Router({
   routes: [
     {
       path: '*',
-      redirect: '/login'
+      redirect: '/tasks'
     },
     {
       path: '/',
-      redirect: '/login'
+      redirect: '/tasks'
     },
     {
       path: '/tasks',
       name: 'tasks',
-      component: Tasks,
-      meta: {
-        requiresAuth: true
-      }
+      component: Tasks
     },
     {
       path: '/Login',
@@ -35,18 +31,12 @@ let router = new Router({
     {
       path: '/task/:taskId',
       name: 'task',
-      component: Task,
-      meta: {
-        requiresAuth: true
-      }
+      component: Task
     },
     {
       path: '/archive',
       name: 'archive',
-      component: Archive,
-      meta: {
-        requiresAuth: true
-      }
+      component: Archive
     },
     {
       path: '/sign-up',
@@ -56,17 +46,8 @@ let router = new Router({
   ]
 });
 
-router.beforeEach((to, from, next) => {
-  const currentUser = firebase.auth().currentUser;
-  const requireAuth = to.matched.some(record => record.meta.requiresAuth);
-
-  if (requireAuth && !currentUser) {
-    next('login');
-  } else if (!requireAuth && currentUser) {
-    next('tasks');
-  } else {
-    next();
-  }
-});
+// router.beforeEach((to, from, next) => {
+//
+// });
 
 export default router;
