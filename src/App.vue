@@ -3,7 +3,9 @@
     <header class="header">
       <span>{{userName}}</span>
       <button v-if="isLogin" v-on:click="logout">LogOut</button>
-      <router-link v-if="!isLogin" to="/login">LogIn</router-link>
+      <router-link v-if="!isLogin" to="/login">Log In</router-link>
+      <router-link v-if="!isLogin" to="/sign-up">Sign Up</router-link>
+      <router-link v-if="isLogin" to="/archive">Archive</router-link>
     </header>
     <main class="content">
       <router-view></router-view>
@@ -55,6 +57,12 @@ export default {
     nextIdRef.on('value', function (snapshot) {
       store.commit('setNextId', snapshot.val());
     });
+
+    // const tasksRef = firebase.database().ref('nextId');
+    // nextIdRef.on('value', function (snapshot) {
+    //   store.commit('setNextId', snapshot.val());
+    // });
+
     firebase.auth().onAuthStateChanged(
       function (user) {
         if (user) {

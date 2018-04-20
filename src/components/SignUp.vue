@@ -56,7 +56,10 @@ export default {
             alert('Ooops! ' + err.message);
           })
         .then(
-          () => alert('Your account has been created !'),
+          () => {
+            alert('Your account has been created !');
+            this.$router.push('/tasks');
+          },
           (err) => alert(`Ooops. ${err.message}`));
     },
 

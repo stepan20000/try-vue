@@ -45,12 +45,13 @@ export default {
         return this.$store.state.tasks;
       }
     },
+    archive
     nextId: {
       get () {
         return this.$store.state.nextId;
       },
-      set () {
-        return this.$store.commit('setNextId', this.nextId);
+      set (nextId) {
+        return this.$store.commit('setNextId', nextId);
       }
     }
   },
@@ -58,10 +59,12 @@ export default {
     addTask: function () {
       const self = this;
       this.tasks[self.nextId] = {
-        id: self.nextId++,
+        id: self.nextId,
         text: this.taskText,
         isCompleted: false
       };
+      self.nextId = self.nextId + 1;
+      console.log('self.nextId', self.nextId);
       this.saveTasks();
     },
     deleteTask: function (id) {
@@ -80,6 +83,25 @@ export default {
       const self = this;
       firebase.database().ref('users/' + self.userId).set({tasks: Object.assign({}, self.tasks)});
       firebase.database().ref('nextId').set(self.nextId);
+    },
+    archiveTask: function (id) {
+      const processedTask = Object.assign({}, this.tasks[id]);
+      this.archive =
+    }
+  },
+  created: function () {
+    const self = this;
+    const store = this.$store;
+    if (this.userId) {
+      const archiveRef = firebase.database().ref('users/' + self.userId + '/archive');
+      archiveRef.on('value', function (snapshot) {
+        console.log('archiveRef changed', snapshot.val());
+        if (snapshot.val()) {
+          store.commit('setArchive', Object.assign({}, snapshot.val()));
+        }
+      });
+    } else {
+      this.$router.push('/login');
     }
   }
 };

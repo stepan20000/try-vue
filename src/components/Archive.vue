@@ -5,10 +5,16 @@
 </template>
 
 <script>
+import firebase from 'firebase';
+import Task from './Task';
+
 export default {
   name: 'archive',
   data: () => { return {}; },
-  methods: {}
+  methods: {},
+  created: function () {
+
+  }
 };
 </script>
 

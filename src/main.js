@@ -26,6 +26,7 @@ const store = new Vuex.Store({
     userName: '',
     userId: '',
     tasks: {},
+    archive: {},
     nextId: 0
   },
   mutations: {
@@ -47,6 +48,9 @@ const store = new Vuex.Store({
     },
     setTasks (state, payload) {
       state.tasks = payload;
+    },
+    setArchive (state, payload) {
+      state.archive = payload;
     },
     setNextId (state, payload) {
       state.nextId = payload;
