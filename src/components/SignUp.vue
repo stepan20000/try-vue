@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import firebase from 'firebase';
+import backEndMixin from '../mixins/backendMixin';
 
 export default {
   name: 'signUp',
@@ -31,38 +31,15 @@ export default {
       passwordsNotMatch: false
     };
   },
+  mixins: [backEndMixin],
   methods: {
     signUp: function () {
-      const self = this;
       if (!this.checkPassword()) {
         this.passwordsNotMatch = true;
         return;
       }
-      firebase.auth().createUserAndRetrieveDataWithEmailAndPassword(this.email, this.password)
-        .then(
-          function () {
-            return firebase.auth().currentUser.updateProfile({
-              displayName: self.name,
-              photoURL: ''
-            });
-          },
-          function (err) {
-            alert('Ooops! ' + err.message);
-          })
-        .then(
-          function () {
-          },
-          function (err) {
-            alert('Ooops! ' + err.message);
-          })
-        .then(
-          () => {
-            alert('Your account has been created !');
-            this.$router.push('/tasks');
-          },
-          (err) => alert(`Ooops. ${err.message}`));
+      this.backSignUp(this.name, this.email, this.password);
     },
-
     checkPassword: function () {
       return this.password === this.repeatPassword && this.password;
     },

@@ -2,19 +2,27 @@
   <div class="tasks">
     <h1>Tasks</h1>
     <form v-on:submit="addTask" id="taskForm">
-      <textarea form="taskForm" type="textarea" v-model="taskText" rows="4" cols="50">
-        Enter text here ...
+      <textarea
+        form="taskForm"
+        v-model="taskText"
+        rows="4" cols="50"
+        placeholder="Enter text here ..."
+        required>
       </textarea>
-      <button>Submit</button>
+      <div>
+        <button>Add task</button>
+      </div>
     </form>
-    <ul>
+    <ul class="tasks__list">
       <task
+        modify="true" toggle="true" archive="true"
         v-for="task in tasks"
         v-bind:key="task.id"
         v-bind:task="task"
         v-on:toggleTask="toggleTask"
         v-on:deleteTask="deleteTask"
-        v-on:modifyTask="modifyTask">
+        v-on:modifyTask="modifyTask"
+        v-on:archiveTask="archiveTask">
       </task>
     </ul>
   </div>
@@ -23,6 +31,7 @@
 <script>
 import firebase from 'firebase';
 import Task from './Task';
+import backEndMixin from '../mixins/backendMixin';
 
 export default {
   name: 'tasks',
@@ -34,6 +43,7 @@ export default {
   components: {
     Task
   },
+  mixins: [backEndMixin],
   computed: {
     userId: {
       get () {
@@ -45,7 +55,11 @@ export default {
         return this.$store.state.tasks;
       }
     },
-    archive
+    archive: {
+      get () {
+        return this.$store.state.archive;
+      }
+    },
     nextId: {
       get () {
         return this.$store.state.nextId;
@@ -57,36 +71,35 @@ export default {
   },
   methods: {
     addTask: function () {
-      const self = this;
-      this.tasks[self.nextId] = {
-        id: self.nextId,
+      this.tasks[this.nextId] = {
+        id: this.nextId,
         text: this.taskText,
         isCompleted: false
       };
-      self.nextId = self.nextId + 1;
-      console.log('self.nextId', self.nextId);
-      this.saveTasks();
+      this.nextId++;
+      this.taskText = '';
+      this.backSetNextId(this.nextId);
+      this.backSetTasks(this.userId, this.tasks);
     },
     deleteTask: function (id) {
       delete this.tasks[id];
-      this.saveTasks();
+      this.backSetTasks(this.userId, this.tasks);
     },
     toggleTask: function (id) {
       this.tasks[id].isCompleted = !this.tasks[id].isCompleted;
-      this.saveTasks();
+      this.backSetTasks(this.userId, this.tasks);
     },
     modifyTask: function (id, text) {
       this.tasks[id].text = text;
-      this.saveTasks();
-    },
-    saveTasks: function () {
-      const self = this;
-      firebase.database().ref('users/' + self.userId).set({tasks: Object.assign({}, self.tasks)});
-      firebase.database().ref('nextId').set(self.nextId);
+      this.backSetTasks(this.userId, this.tasks);
     },
     archiveTask: function (id) {
-      const processedTask = Object.assign({}, this.tasks[id]);
-      this.archive =
+      const tasks = Object.assign({}, this.tasks);
+      const archive = Object.assign({}, this.archive);
+      archive[id] = tasks[id];
+      delete tasks[id];
+      this.backSetTasks(this.userId, tasks);
+      this.backSetArchive(this.userId, archive);
     }
   },
   created: function () {
@@ -95,10 +108,11 @@ export default {
     if (this.userId) {
       const archiveRef = firebase.database().ref('users/' + self.userId + '/archive');
       archiveRef.on('value', function (snapshot) {
-        console.log('archiveRef changed', snapshot.val());
-        if (snapshot.val()) {
-          store.commit('setArchive', Object.assign({}, snapshot.val()));
-        }
+        store.commit('setArchive', Object.assign({}, snapshot.val()));
+      });
+      const tasksRef = firebase.database().ref('users/' + self.userId + '/tasks');
+      tasksRef.on('value', function (snapshot) {
+        store.commit('setTasks', Object.assign({}, snapshot.val()));
       });
     } else {
       this.$router.push('/login');
@@ -108,5 +122,12 @@ export default {
 </script>
 
 <style scoped lang="scss" rel="stylesheet/scss">
+  .tasks {
 
+    &__list {
+      margin-top: 40px;
+      padding: 0;
+
+    }
+  }
 </style>

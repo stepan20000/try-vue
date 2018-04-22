@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import firebase from 'firebase';
+import backEndMixin from '../mixins/backendMixin';
 
 export default {
   name: 'login',
@@ -19,17 +19,10 @@ export default {
       password: ''
     };
   },
+  mixins: [backEndMixin],
   methods: {
     login: function () {
-      const self = this;
-      firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-        .then(
-          function () {
-            self.$router.replace('tasks');
-          },
-          function (err) {
-            alert('! ' + err.message);
-          });
+      this.backLogin();
     }
   }
 };

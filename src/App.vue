@@ -1,11 +1,37 @@
 <template>
   <div id="app">
     <header class="header">
-      <span>{{userName}}</span>
-      <button v-if="isLogin" v-on:click="logout">LogOut</button>
-      <router-link v-if="!isLogin" to="/login">Log In</router-link>
-      <router-link v-if="!isLogin" to="/sign-up">Sign Up</router-link>
-      <router-link v-if="isLogin" to="/archive">Archive</router-link>
+      <router-link
+        class="header__link"
+        active-class="header__link_active"
+        v-if="!isLogin" to="/login">
+        Log In
+      </router-link>
+      <router-link
+        class="header__link"
+        active-class="header__link_active"
+        v-if="!isLogin"
+        to="/sign-up">
+        Sign Up
+      </router-link>
+      <router-link
+        class="header__link"
+        active-class="header__link_active"
+        v-if="isLogin"
+        to="/archive">
+        Archive
+      </router-link>
+      <router-link
+        class="header__link"
+        active-class="header__link_active"
+        v-if="isLogin"
+        to="/tasks">
+        Tasks
+      </router-link>
+      <p class="header__controls" v-if="isLogin">
+        <span class="header__name">{{userName}}</span>
+        <button class="header__button" v-on:click="backLogout">LogOut</button>
+      </p>
     </header>
     <main class="content">
       <router-view></router-view>
@@ -14,7 +40,7 @@
 </template>
 
 <script>
-import firebase from 'firebase';
+import backEndMixin from './mixins/backendMixin';
 
 export default {
   name: 'App',
@@ -23,18 +49,7 @@ export default {
 
     };
   },
-  methods: {
-    logout: function () {
-      const self = this;
-      firebase.auth().signOut().then(function () {
-        console.log('Signed Out');
-        self.$store.commit('logout');
-        self.$router.replace('login');
-      }, function (error) {
-        console.error('Sign Out Error', error);
-      });
-    }
-  },
+  mixins: [backEndMixin],
   computed: {
     isLogin: {
       get () {
@@ -49,39 +64,6 @@ export default {
         return this.$store.commit('setName', name);
       }
     }
-  },
-  created: function () {
-    const store = this.$store;
-    console.log('created');
-    const nextIdRef = firebase.database().ref('nextId');
-    nextIdRef.on('value', function (snapshot) {
-      store.commit('setNextId', snapshot.val());
-    });
-
-    // const tasksRef = firebase.database().ref('nextId');
-    // nextIdRef.on('value', function (snapshot) {
-    //   store.commit('setNextId', snapshot.val());
-    // });
-
-    firebase.auth().onAuthStateChanged(
-      function (user) {
-        if (user) {
-          console.log('auth true');
-          store.commit('setUser', { userName: user.displayName, userId: user.uid });
-          store.commit('login');
-
-          const tasksRef = firebase.database().ref('users/' + user.uid + '/tasks');
-          tasksRef.on('value', function (snapshot) {
-            console.log('task changed', snapshot.val());
-            if (snapshot.val()) {
-              store.commit('setTasks', Object.assign({}, snapshot.val()));
-            }
-          });
-        } else {
-          console.log('auth false');
-          store.commit('clear');
-        }
-      });
   }
 };
 </script>
@@ -91,6 +73,45 @@ export default {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
+  }
+  .header {
+    background: blue;
+    font-weight: bold;
+    color: white;
+
+    &__link {
+      display: inline-block;
+      height: 100%;
+      margin: 0 10px;
+      padding: 5px;
+      text-decoration: none;
+      color: white;
+
+      &_active {
+        background: white;
+        color: blue;
+      }
+    }
+
+    &__controls {
+      display: inline-block;
+      float: right;
+      margin: 0 10px;
+      padding: 5px;
+      height: 100%;
+    }
+
+    &__button {
+      background: bisque;
+      border-radius: 10px;
+    }
+
+    &__name {
+      margin: 0 10px;
+    }
+  }
+
+  .content {
+    background: white;
   }
 </style>
