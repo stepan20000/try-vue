@@ -13,10 +13,11 @@
         <button>Add task</button>
       </div>
     </form>
+    <input type="text" v-model="searchQuery" maxlength="10"  />
     <ul class="tasks__list">
       <task
         modify="true" toggle="true" archive="true"
-        v-for="task in tasks"
+        v-for="task in showedTasks"
         v-bind:key="task.id"
         v-bind:task="task"
         v-on:toggleTask="toggleTask"
@@ -32,18 +33,20 @@
 import firebase from 'firebase';
 import Task from './Task';
 import backEndMixin from '../mixins/backendMixin';
+import search from '../mixins/searchMixin';
 
 export default {
   name: 'tasks',
   data: () => {
     return {
-      taskText: ''
+      taskText: '',
+      searchQuery: ''
     };
   },
   components: {
     Task
   },
-  mixins: [backEndMixin],
+  mixins: [backEndMixin, search],
   computed: {
     userId: {
       get () {
@@ -53,6 +56,11 @@ export default {
     tasks: {
       get () {
         return this.$store.state.tasks;
+      }
+    },
+    showedTasks: {
+      get () {
+        return this.search(this.tasks, this.searchQuery);
       }
     },
     archive: {

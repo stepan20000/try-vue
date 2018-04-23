@@ -1,10 +1,11 @@
 <template>
   <div class="archive">
     <h1>Archive</h1>
+    <input type="text" v-model="searchQuery" maxlength="10"  />
     <ul class="archive__list">
       <task
         moveToTasks="true" toggle="true"
-        v-for="task in archive"
+        v-for="task in showedTasks"
         v-bind:key="task.id"
         v-bind:task="task"
         v-on:toggleTask="toggleTask"
@@ -18,12 +19,13 @@
 <script>
 import Task from './Task';
 import backEndMixin from '../mixins/backendMixin';
+import search from '../mixins/searchMixin';
 
 export default {
   name: 'archive',
   data: () => {
     return {
-
+      searchQuery: ''
     };
   },
   components: {
@@ -40,13 +42,18 @@ export default {
         return this.$store.state.tasks;
       }
     },
+    showedTasks: {
+      get () {
+        return this.search(this.archive, this.searchQuery);
+      }
+    },
     archive: {
       get () {
         return this.$store.state.archive;
       }
     }
   },
-  mixins: [backEndMixin],
+  mixins: [backEndMixin, search],
   methods: {
     deleteTask: function (id) {
       delete this.archive[id];
