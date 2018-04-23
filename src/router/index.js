@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Login from '../components/Login';
 import Archive from '../components/Archive';
-import Task from '../components/Task';
+import ModifyTask from '../components/ModifyTask';
 import Tasks from '../components/Tasks';
 import SignUp from '../components/SignUp';
 
@@ -31,7 +31,7 @@ let router = new Router({
     {
       path: '/task/:taskId',
       name: 'task',
-      component: Task
+      component: ModifyTask
     },
     {
       path: '/archive',

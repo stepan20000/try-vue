@@ -13,15 +13,7 @@
       <button v-on:click="onMove">
         {{archive ? 'Archive' : 'Restore'}}
       </button>
-      <button v-if="modify" v-on:click="toggleModifyWindow">
-        {{this.isModifiedWindowOpen ? 'Close modify window': 'Modify'}}
-      </button>
-      <div class="task__modify" v-if="isModifiedWindowOpen">
-        <textarea name="text" v-model="taskText" cols="50" rows="4" :placeholder="task.text"></textarea>
-        <div>
-          <button v-on:click="$emit('modifyTask', task.id, taskText)">Submit</button>
-        </div>
-      </div>
+      <router-link :to="{path: '/task', name: 'task', params: {taskId: task.id}}">Modify</router-link>
     </div>
   </li>
 </template>
@@ -32,16 +24,12 @@ export default {
   name: 'task',
   data: () => {
     return {
-      isModifyWindowOpen: false,
       taskText: '',
       isModifiedWindowOpen: false
     };
   },
-  props: ['task', 'modify', 'toggle', 'archive', 'moveToTasks'],
+  props: ['task', 'toggle', 'archive', 'moveToTasks'],
   methods: {
-    toggleModifyWindow: function () {
-      this.isModifiedWindowOpen = !this.isModifiedWindowOpen;
-    },
     onMove: function () {
       if (this.archive) {
         this.$emit('archiveTask', this.task.id);

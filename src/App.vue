@@ -97,7 +97,7 @@ export default {
       display: inline-block;
       float: right;
       margin: 0 10px;
-      padding: 5px;
+      padding: 3px;
       height: 100%;
     }
 

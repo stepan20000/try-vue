@@ -13,16 +13,15 @@
         <button>Add task</button>
       </div>
     </form>
-    <input type="text" v-model="searchQuery" maxlength="10"  />
+    <input class="tasks__search" placeholder="Search..." type="text" v-model="searchQuery" maxlength="10"/>
     <ul class="tasks__list">
       <task
-        modify="true" toggle="true" archive="true"
+        toggle="true" archive="true"
         v-for="task in showedTasks"
         v-bind:key="task.id"
         v-bind:task="task"
         v-on:toggleTask="toggleTask"
         v-on:deleteTask="deleteTask"
-        v-on:modifyTask="modifyTask"
         v-on:archiveTask="archiveTask">
       </task>
     </ul>
@@ -97,10 +96,6 @@ export default {
       this.tasks[id].isCompleted = !this.tasks[id].isCompleted;
       this.backSetTasks(this.userId, this.tasks);
     },
-    modifyTask: function (id, text) {
-      this.tasks[id].text = text;
-      this.backSetTasks(this.userId, this.tasks);
-    },
     archiveTask: function (id) {
       const tasks = Object.assign({}, this.tasks);
       const archive = Object.assign({}, this.archive);
@@ -135,7 +130,10 @@ export default {
     &__list {
       margin-top: 40px;
       padding: 0;
-
     }
+
+    &__search {
+      margin-top: 20px;
+         }
   }
 </style>
