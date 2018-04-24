@@ -81,7 +81,7 @@ export default {
     &__list {
       margin-top: 40px;
       padding: 0;
-
+      list-style-type: none;
     }
   }
 </style>
